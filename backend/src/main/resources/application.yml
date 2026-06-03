@@ -1,0 +1,118 @@
+server:
+  # 服务器端口号
+  port: 8080
+  servlet:
+    # 应用上下文路径
+    context-path: /api
+  tomcat:
+    # 最大线程数
+    max-threads: 200
+    # 字符编码
+    uri-encoding: UTF-8
+
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bookshare?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&connectTimeout=30000&socketTimeout=60000
+    username: root
+    password: 20040203
+    # 连接池配置
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+  
+# Redis缓存配置（已移除，未使用）
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+  
+  # Jackson JSON配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+  
+  # Spring Security配置
+  security:
+    # 公开访问的路径
+    public-paths:
+      - /user/login
+      - /user/register
+      - /user/captcha
+      - /category/list
+      - /book/list
+      - /book/detail/**
+      - /swagger-ui/**
+      - /v3/api-docs/**
+      - /doc.html/**
+
+# MyBatis-Plus配置
+mybatis-plus:
+  # Mapper XML文件路径
+  mapper-locations: classpath:mapper/*.xml
+  # 实体扫描包路径
+  type-aliases-package: com.example.bookshare.entity
+  # 全局配置
+  global-config:
+    db-config:
+      # 主键类型：AUTO自增、INPUT用户输入、ID_WORKER分布式ID
+      id-type: auto
+      # 逻辑删除字段名
+      logic-delete-field: deleted
+      # 逻辑删除值
+      logic-delete-value: 1
+      # 未删除值
+      logic-not-delete-value: 0
+      # 驼峰下划线转换
+      map-underscore-to-camel-case: true
+  # 配置日志
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT配置
+jwt:
+  # JWT密钥（生产环境应使用更复杂的密钥）
+  secret: bookshare-secret-key-2024-springboot-vue3-jwt-token-generate-this-key-is-long-enough-for-hs512-algorithm-requirements
+  # Token有效期（单位：毫秒，7天）
+  expiration: 604800000
+  # Token前缀
+  token-prefix: Bearer
+  # Header名称
+  header-name: Authorization
+
+# 分页配置
+page:
+  # 默认每页大小
+  default-page-size: 10
+  # 最大每页大小
+  max-page-size: 100
+
+# 文件上传路径配置
+upload:
+  # 上传文件保存路径
+  path: /usr/local/bookshare/uploads
+  # 允许的文件类型
+  allowed-types:
+    - jpg
+    - jpeg
+    - png
+    - gif
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.example.bookshare: DEBUG
+    com.example.bookshare.mapper: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
