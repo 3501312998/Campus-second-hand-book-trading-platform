@@ -626,6 +626,15 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.el-footer {
+  --el-footer-padding: 0 20px;
+  --el-footer-height: 110px;
+  padding: var(--el-footer-padding);
+  box-sizing: border-box;
+  height: var(--el-footer-height);
+  flex-shrink: 0;
+}
+
 .footer {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);

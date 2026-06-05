@@ -20,6 +20,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.bookshare.common.Result;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.Arrays;
 
 /**
@@ -59,6 +64,28 @@ public class SecurityConfig {
         http.sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         
+        // 配置异常处理，返回 JSON 而非重定向
+        http.exceptionHandling(exceptions -> exceptions
+                // 未认证（无 token 或 token 无效）→ 401
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setContentType("application/json;charset=utf-8");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    ObjectMapper mapper = new ObjectMapper();
+                    response.getWriter().write(mapper.writeValueAsString(
+                            Result.unauthorized("未授权，请先登录")
+                    ));
+                })
+                // 已认证但无权限 → 403
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setContentType("application/json;charset=utf-8");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    ObjectMapper mapper = new ObjectMapper();
+                    response.getWriter().write(mapper.writeValueAsString(
+                            Result.forbidden("禁止访问，您没有权限")
+                    ));
+                })
+        );
+        
         // 配置请求授权
         http.authorizeHttpRequests(authz -> authz
                 // 允许公开访问的路径（context-path会被自动去掉）
@@ -68,6 +95,8 @@ public class SecurityConfig {
                         "/user/captcha",
                         "/category/list",
                         "/book/list",
+                        "/book/hot",
+                        "/book/latest",
                         "/book/detail/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
